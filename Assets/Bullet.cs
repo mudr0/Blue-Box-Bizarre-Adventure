@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
+
 public class Bullet : MonoBehaviour
 {
     [SerializeField] private float _speed;
@@ -9,33 +11,27 @@ public class Bullet : MonoBehaviour
     [SerializeField] private float _damage;
 
     private GameObject _target;
-    private Vector2 _position;
-    private float _time;
+    private Rigidbody2D _rigidBody;
 
     public GameObject Target { get => _target; set => _target = value; }
 
-    private void Start()
+    private void Awake()
     {
-        _position = Target.transform.position;
+        _rigidBody = GetComponent<Rigidbody2D>();
     }
 
-    void Update()
+    public void MoveBullet(Vector2 direction)
     {
-        _time += Time.deltaTime;
-        transform.position = Vector2.MoveTowards(transform.position, _position, _speed * Time.deltaTime);
-        if(_time>= _lifeTime)
-        {
-            Destroy(gameObject);
-        }
+        _rigidBody.AddForce(direction * _speed, ForceMode2D.Impulse);
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player"))
         {
-            var playerHealth = collision.GetComponent<PlayerHealthManager>();
-            playerHealth.ChangeHealth(-_damage);
+            collision.gameObject.GetComponent<PlayerHealthManager>().ChangeHealth(-_damage);
         }
         Destroy(gameObject);
     }
+
 }
