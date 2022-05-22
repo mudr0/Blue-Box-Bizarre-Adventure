@@ -51,7 +51,7 @@ public class Turret : MonoBehaviour
         if (_currentTime >= _reloadTime && collision.gameObject.CompareTag("Player"))
         {
             _currentTime = 0;
-            var bullet = Instantiate(_bullet, _ammoHead.transform);
+            var bullet = Instantiate(_bullet, _ammoHead.transform.position, Quaternion.identity);
             bullet.GetComponent<Bullet>().MoveBullet(_playerPos.position - bullet.transform.position);
         }
     }
